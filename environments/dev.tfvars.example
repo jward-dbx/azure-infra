@@ -1,0 +1,68 @@
+# Development Environment Configuration
+# Copy this file to dev.tfvars and update with your actual values
+
+location            = "eastus2"
+resource_group_name = "rg-ward-chn-dev"
+
+tags = {
+  Environment = "dev"
+  ManagedBy   = "Terraform"
+  Project     = "CHN Demo"
+  CostCenter  = "Engineering"
+}
+
+# Networking Configuration
+vnet_name                            = "wardvnet-dev"
+vnet_address_space                   = ["10.0.0.0/16"]
+subnet_default_prefix                = "10.0.0.0/24"
+subnet_sql_private_endpoints_prefix  = "10.0.1.0/24"
+subnet_databricks_private_prefix     = "10.0.2.0/24"
+subnet_databricks_public_prefix      = "10.0.3.0/24"
+nsg_databricks_name                  = "nsg-ward-dbx-dev"
+nat_gateway_name                     = "natgw-ward-chn-dev"
+nat_gateway_public_ip_id             = "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/rg-ward-chn-dev/providers/Microsoft.Network/publicIPAddresses/nat-ward-pip-dev"
+
+# Databricks Configuration
+databricks_workspace_name                = "dbx-chn-ward-dev"
+databricks_sku                          = "premium"
+databricks_managed_resource_group_name  = "mrg-chn-ward-dev"
+databricks_access_connector_name        = "ac-ward-chn-dev"
+databricks_no_public_ip                 = true
+databricks_public_network_access_enabled = true
+
+# SQL Server Configuration
+sql_server_name                    = "chn-demo-dev"
+sql_server_version                 = "12.0"
+sql_admin_login                    = "admin_chn"
+sql_admin_password                 = "CHANGE_ME_SECURE_PASSWORD"  # Use Azure Key Vault or environment variables
+sql_min_tls_version                = "1.2"
+sql_public_network_access_enabled  = true
+sql_azuread_admin_login            = "your-email@domain.com"
+sql_azuread_admin_object_id        = "YOUR-AZURE-AD-OBJECT-ID"
+sql_azuread_admin_tenant_id        = "YOUR-AZURE-AD-TENANT-ID"
+sql_private_endpoint_name          = "dbx-sql-server-dev"
+
+# SQL Databases - Smaller sizes for dev
+sql_databases = {
+  adventure_works_a = {
+    name         = "adventure-works-a"
+    sku_name     = "GP_S_Gen5_1"
+    max_size_gb  = 32
+    min_capacity = 0.5
+    collation    = "SQL_Latin1_General_CP1_CI_AS"
+  }
+  adventure_works_b = {
+    name         = "adventure-works-b"
+    sku_name     = "GP_S_Gen5_1"
+    max_size_gb  = 32
+    min_capacity = 0.5
+    collation    = "SQL_Latin1_General_CP1_CI_AS"
+  }
+}
+
+# Storage Configuration
+storage_account_name              = "wardchndevstorage"
+storage_account_tier              = "Standard"
+storage_account_replication_type  = "LRS"
+storage_enable_hns                = true
+storage_enable_large_file_share   = true

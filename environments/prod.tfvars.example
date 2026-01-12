@@ -1,0 +1,69 @@
+# Production Environment Configuration
+# Copy this file to prod.tfvars and update with your actual values
+
+location            = "eastus2"
+resource_group_name = "rg-ward-chn-prod"
+
+tags = {
+  Environment = "prod"
+  ManagedBy   = "Terraform"
+  Project     = "CHN Demo"
+  CostCenter  = "Production"
+  Compliance  = "Required"
+}
+
+# Networking Configuration - Different address space from dev
+vnet_name                            = "wardvnet-prod"
+vnet_address_space                   = ["10.1.0.0/16"]
+subnet_default_prefix                = "10.1.0.0/24"
+subnet_sql_private_endpoints_prefix  = "10.1.1.0/24"
+subnet_databricks_private_prefix     = "10.1.2.0/24"
+subnet_databricks_public_prefix      = "10.1.3.0/24"
+nsg_databricks_name                  = "nsg-ward-dbx-prod"
+nat_gateway_name                     = "natgw-ward-chn-prod"
+nat_gateway_public_ip_id             = "/subscriptions/YOUR-SUBSCRIPTION-ID/resourceGroups/rg-ward-chn-prod/providers/Microsoft.Network/publicIPAddresses/nat-ward-pip-prod"
+
+# Databricks Configuration
+databricks_workspace_name                = "dbx-chn-ward-prod"
+databricks_sku                          = "premium"
+databricks_managed_resource_group_name  = "mrg-chn-ward-prod"
+databricks_access_connector_name        = "ac-ward-chn-prod"
+databricks_no_public_ip                 = true
+databricks_public_network_access_enabled = false  # Disabled for production security
+
+# SQL Server Configuration
+sql_server_name                    = "chn-demo-prod"
+sql_server_version                 = "12.0"
+sql_admin_login                    = "admin_chn"
+sql_admin_password                 = "CHANGE_ME_SECURE_PASSWORD"  # Use Azure Key Vault or environment variables
+sql_min_tls_version                = "1.2"
+sql_public_network_access_enabled  = false  # Disabled for production security
+sql_azuread_admin_login            = "your-email@domain.com"
+sql_azuread_admin_object_id        = "YOUR-AZURE-AD-OBJECT-ID"
+sql_azuread_admin_tenant_id        = "YOUR-AZURE-AD-TENANT-ID"
+sql_private_endpoint_name          = "dbx-sql-server-prod"
+
+# SQL Databases - Production sizes with better performance
+sql_databases = {
+  adventure_works_a = {
+    name         = "adventure-works-a"
+    sku_name     = "GP_Gen5_2"  # Higher tier for production
+    max_size_gb  = 100
+    min_capacity = 1
+    collation    = "SQL_Latin1_General_CP1_CI_AS"
+  }
+  adventure_works_b = {
+    name         = "adventure-works-b"
+    sku_name     = "GP_Gen5_2"  # Higher tier for production
+    max_size_gb  = 100
+    min_capacity = 1
+    collation    = "SQL_Latin1_General_CP1_CI_AS"
+  }
+}
+
+# Storage Configuration - Production with geo-redundancy
+storage_account_name              = "wardchnprodstorage"
+storage_account_tier              = "Standard"
+storage_account_replication_type  = "GRS"  # Geo-redundant for production
+storage_enable_hns                = true
+storage_enable_large_file_share   = true
